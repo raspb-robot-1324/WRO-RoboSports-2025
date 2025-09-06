@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" action="/">
+        <div style="display: flex; gap: 1rem;">
+            <label for="H_low">Low H:</label>
+            <input type="number" name="H_low"/>
+            <label for="S_low">S:</label>
+            <input type="number" name="S_low"/>
+            <label for="V_low">V:</label>
+            <input type="number" name="V_low"/>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <label for="H_high">High H:</label>
+            <input type="number" name="H_high"/>
+            <label for="S_high">S:</label>
+            <input type="number" name="S_high"/>
+            <label for="V_high">V:</label>
+            <input type="number" name="V_high"/>
+        </div>
+        <label for="temperature">Temperature:</label>
+        <input type="number" name="temperature"/>
+        <input type="submit" value="Submit"/>
+    </form>
+
+    <button id="stream_button">Toggle stream</button>
+
+    <script async defer>
+        const H_low = document.getElementsByName('H_low')[0];
+        const S_low = document.getElementsByName('S_low')[0];
+        const V_low = document.getElementsByName('V_low')[0];
+        const H_high = document.getElementsByName('H_high')[0];
+        const S_high = document.getElementsByName('S_high')[0];
+        const V_high = document.getElementsByName('V_high')[0];
+
+        const stream_button = document.getElementById('stream_button');
+        const stream = document.createElement('img');
+        let stream_on = false;
+
+        function setHSV(data) {
+            H_low.value = data["orangeLow"][0]
+            S_low.value = data["orangeLow"][1]
+            V_low.value = data["orangeLow"][2]
+            H_high.value = data["orangeHigh"][0]
+            S_high.value = data["orangeHigh"][1]
+            V_high.value = data["orangeHigh"][2]
+        }
+
+        stream_button.addEventListener('click', (ev) => {
+            if (stream_on) {
+                document.body.removeChild(stream);
+                stream.src = "";
+                stream_on = false;
+            } else {
+                stream.src = "/stream";
+                document.body.appendChild(stream);
+                stream_on = true;
+            }
+        })
+
+        window.onload = () => {
+            fetch(`http://${location.host}/getHSV`)
+            .then((result) => result.json())
+            .then((data) => setHSV(data))
+        }
+    </script>
+</body>
+</html>
